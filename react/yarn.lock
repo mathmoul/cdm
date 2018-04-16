@@ -6,9 +6,21 @@
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.2.tgz#12cfaba693ba20f114ed5765467ff25fdf67ddb0"
 
+"@types/jquery@*":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.3.1.tgz#55758d44d422756d6329cbf54e6d41931d7ba28f"
+
+"@types/lodash@^4.14.107":
+  version "4.14.107"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.107.tgz#b2d2ae3958bfb8ff828495cbe12214af9e4d035e"
+
 "@types/node@*":
   version "9.6.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.5.tgz#ee700810fdf49ac1c399fc5980b7559b3e5a381d"
+
+"@types/prop-types@^15.5.2":
+  version "15.5.2"
+  resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.2.tgz#3c6b8dceb2906cc87fe4358e809f9d20c8d59be1"
 
 "@types/react-dom@^16.0.5":
   version "16.0.5"
@@ -37,6 +49,160 @@
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.3.11.tgz#345a17f1c96420f10b9f0dc696c31091ff9d66ea"
   dependencies:
     csstype "^2.2.0"
+
+"@types/semantic-ui-accordion@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-accordion/-/semantic-ui-accordion-2.2.2.tgz#2f3b9d60a981d9eddc3705619079defaacc3aee0"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-api@*":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-api/-/semantic-ui-api-2.2.4.tgz#ea9cad381b38b77f95fa3bf679d7c5273c7b20dd"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-checkbox@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-checkbox/-/semantic-ui-checkbox-2.2.2.tgz#bb19b20d503103a724c9dc79f71132edb092a362"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-dimmer@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-dimmer/-/semantic-ui-dimmer-2.2.2.tgz#667185161c31d046a51a6d71097d2909829e1423"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-dropdown@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-dropdown/-/semantic-ui-dropdown-2.2.2.tgz#455c95c2cb1dc665e80746fa5117aa850156da4c"
+  dependencies:
+    "@types/jquery" "*"
+    "@types/semantic-ui-api" "*"
+
+"@types/semantic-ui-embed@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-embed/-/semantic-ui-embed-2.2.2.tgz#5b851bc966c06812550410348da7f8ea866e0c02"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-form@*":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-form/-/semantic-ui-form-2.2.4.tgz#81ef02ff35c21c7aa102483463800a68cc0863b8"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-modal@*":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-modal/-/semantic-ui-modal-2.2.3.tgz#482e8ca3323b22e7247ff92249a52a8bc2fccc6d"
+  dependencies:
+    "@types/jquery" "*"
+    "@types/semantic-ui-dimmer" "*"
+
+"@types/semantic-ui-nag@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-nag/-/semantic-ui-nag-2.2.2.tgz#93e9cc410aa17b273ef73a705666815a7c2a09a6"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-popup@*":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-popup/-/semantic-ui-popup-2.2.3.tgz#cdf391d0e16ffbfdc34c7fee85e85d20a9323c5a"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-progress@*":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-progress/-/semantic-ui-progress-2.2.3.tgz#2ad3e2b69c5c5927aa4c11634cdf0a04ab53b36f"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-rating@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-rating/-/semantic-ui-rating-2.2.2.tgz#d35807b61ebc6b4f2a977b430fbd862fa5f5b5a7"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-search@*":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-search/-/semantic-ui-search-2.2.3.tgz#7da1a62ed116a1aa0baee2a9c66196b16f643e13"
+  dependencies:
+    "@types/jquery" "*"
+    "@types/semantic-ui-api" "*"
+
+"@types/semantic-ui-shape@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-shape/-/semantic-ui-shape-2.2.2.tgz#ce3bd95e4ec1127380343910c4766a4f070c1336"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-sidebar@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-sidebar/-/semantic-ui-sidebar-2.2.2.tgz#792464d6e381354c8c1e935635c9010b1366f4a9"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-site@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-site/-/semantic-ui-site-2.2.2.tgz#25a358ca572aa0e811f2f912ab6872ef897c8bbe"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-sticky@*":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-sticky/-/semantic-ui-sticky-2.2.3.tgz#1317d2eac9b42d8088f8f0f3228684efa0ce6a84"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-tab@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-tab/-/semantic-ui-tab-2.2.2.tgz#4bae0c8ac1e970cd93fc31cf99f546e29ac9a069"
+  dependencies:
+    "@types/jquery" "*"
+    "@types/semantic-ui-api" "*"
+
+"@types/semantic-ui-transition@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-transition/-/semantic-ui-transition-2.2.2.tgz#e03d9eec32c962a5c862112f75a53879c3628406"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui-visibility@*":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui-visibility/-/semantic-ui-visibility-2.2.2.tgz#57934496df3b2b89f1c932cd886a5b011efe22ce"
+  dependencies:
+    "@types/jquery" "*"
+
+"@types/semantic-ui@^2.2.6":
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/@types/semantic-ui/-/semantic-ui-2.2.6.tgz#5c38b2c3a92e28501972e3b19c7c8687f68ee2cb"
+  dependencies:
+    "@types/jquery" "*"
+    "@types/semantic-ui-accordion" "*"
+    "@types/semantic-ui-api" "*"
+    "@types/semantic-ui-checkbox" "*"
+    "@types/semantic-ui-dimmer" "*"
+    "@types/semantic-ui-dropdown" "*"
+    "@types/semantic-ui-embed" "*"
+    "@types/semantic-ui-form" "*"
+    "@types/semantic-ui-modal" "*"
+    "@types/semantic-ui-nag" "*"
+    "@types/semantic-ui-popup" "*"
+    "@types/semantic-ui-progress" "*"
+    "@types/semantic-ui-rating" "*"
+    "@types/semantic-ui-search" "*"
+    "@types/semantic-ui-shape" "*"
+    "@types/semantic-ui-sidebar" "*"
+    "@types/semantic-ui-site" "*"
+    "@types/semantic-ui-sticky" "*"
+    "@types/semantic-ui-tab" "*"
+    "@types/semantic-ui-transition" "*"
+    "@types/semantic-ui-visibility" "*"
+
+"@types/validator@^9.4.0":
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-9.4.0.tgz#a4a80a31d3e4e094806ec446557808423379858d"
 
 abab@^1.0.3:
   version "1.0.4"
@@ -4578,7 +4744,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-"lodash@>=3.5 <5", lodash@^4.14.0, lodash@^4.15.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.3.0:
+"lodash@>=3.5 <5", lodash@^4.14.0, lodash@^4.15.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0:
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
@@ -5843,7 +6009,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.6.0:
+prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
