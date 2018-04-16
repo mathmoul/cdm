@@ -9,15 +9,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/react": "^16.3.10",
     "react": ">=15",
     "react-dom": "^16.3.1",
     "react-router-dom": "^4.2.2",
     "react-scripts": "^1.1.4",
     "semantic-ui-css": "^2.3.1",
-    "semantic-ui-react": "^0.79.1"
+    "semantic-ui-react": "^0.79.1",
+    "validator": "^9.4.1"
   },
   "devDependencies": {
+    "@types/react": "^16.3.11",
+    "@types/react-dom": "^16.0.5",
+    "@types/react-router": "^4.0.23",
+    "@types/react-router-dom": "^4.2.6",
     "parcel-bundler": "^1.7.1",
     "tslint": "^5.9.1",
     "typescript": "^2.8.1"

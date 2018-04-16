@@ -1,15 +1,16 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { BrowserRouter} from 'react-router-dom';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import {BrowserRouter} from "react-router-dom";
 
-import "semantic-ui-css/semantic.min.css"
+import App from "./App";
 
-import registerServiceWorker from './registerServiceWorker'
-import App from './App'
+import "semantic-ui-css/semantic.min.css";
+
+import registerServiceWorker from "./registerServiceWorker";
 
 ReactDOM.render(
     <BrowserRouter>
-    <App />
+        <App/>
     </BrowserRouter>
-, document.getElementById('app'))
-registerServiceWorker()
+    , document.getElementById("app"));
+registerServiceWorker();
