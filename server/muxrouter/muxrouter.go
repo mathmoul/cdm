@@ -1,14 +1,10 @@
 package muxrouter
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
-
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -34,6 +30,15 @@ type MyError struct {
 }
 
 type Message struct {
+	MessageError
+	MessageSuccess
+}
+
+type MessageSuccess struct {
+	Success bool `json="succes"`
+}
+
+type MessageError struct {
 	MyError `json:"errors"`
 }
 
@@ -45,21 +50,11 @@ func Init() {
 	}
 	R.AddRoute(Routes{
 		Route{
-			Name:   "login",
-			Method: "POST",
-			Path:   "/auth",
-			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				time.Sleep(2 * time.Second)
-				m := &Message{
-					MyError{
-						Global: "Invalid credentials",
-					},
-				}
-				w.WriteHeader(400)
-				b, _ := json.Marshal(m)
-				io.WriteString(w, string(b))
-			},
-			Protected: false,
+			Name:        "login",
+			Method:      "POST",
+			Path:        "/auth",
+			HandlerFunc: Auth,
+			Protected:   false,
 		},
 	})
 }

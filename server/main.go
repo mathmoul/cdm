@@ -3,10 +3,10 @@ package main
 import (
 	"cdm/server/muxrouter"
 	"net/http"
-
 	"os"
 
 	"github.com/gorilla/handlers"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
