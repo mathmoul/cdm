@@ -1,14 +1,13 @@
 {
-  "name": "react",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "front",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "NODE_ENV=dev webpack-dev-server --hot"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
     "eslint": "^4.19.1",
@@ -44,5 +43,6 @@
     "npm-check-updates": "^2.14.1",
     "parcel-bundler": "^1.7.1",
     "redux-devtools-extension": "^2.13.2"
-  }
+  },
+  "proxy": "http://localhost:9090"
 }

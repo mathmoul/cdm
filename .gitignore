@@ -2,3 +2,10 @@ react/node_modules
 react/.cache
 react/dist
 react/.idea
+
+front/node_modules
+front/.idea
+front/.code
+
+server/.idea
+server/tmp
