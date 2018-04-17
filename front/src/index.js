@@ -14,11 +14,17 @@ import App from './App'
 import 'semantic-ui-css/semantic.min.css'
 
 import registerServiceWorker from './registerServiceWorker'
+import { userLoggedIn } from './actions/auth'
 
 const store = createStore(
   rootReducer,
   composeWithDevTools(applyMiddleware(thunk)),
 )
+
+if (localStorage.cdmJWT) {
+  const user = { token: localStorage.cdmJWT}
+  store.dispatch(userLoggedIn(user))
+}
 
 ReactDOM.render(
   <BrowserRouter>
