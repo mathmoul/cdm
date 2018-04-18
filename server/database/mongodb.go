@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2"
 )
 
 type MySession struct {
@@ -17,8 +17,8 @@ type MySession struct {
 User ...
 */
 type User struct {
-	Email    string `json="email"`
-	Password string `json="password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type UserDatas struct {
@@ -34,6 +34,7 @@ GetSession ...
 func GetSession() (*MySession, error) {
 	s, err := mgo.Dial(os.Getenv("MONGODB_URL"))
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	M := &MySession{

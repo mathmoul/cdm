@@ -86,7 +86,9 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 	}
 	c, err := database.GetSession()
 	if err != nil {
+		log.Println(err)
 		m.sendErrorMessage(err.Error(), w, 400)
+		return
 	}
 	if !c.TestCredentials(u.Credentials, u.Credentials.Password, CheckPasswordHash) {
 		m.sendErrorMessage("Invalid credentials", w, 400)
