@@ -1,12 +1,15 @@
 package database
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"os"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
+	jwt "github.com/dgrijalva/jwt-go"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type MySession struct {
@@ -19,13 +22,25 @@ User ...
 type User struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Token    string `json:"token"`
 }
 
 type UserDatas struct {
-	ID        bson.ObjectId `bson:"_id,omitempty"`
-	Email     string
-	Password  string
-	Timestamp time.Time
+	ID           bson.ObjectId `bson:"_id,omitempty"`
+	Email        string
+	Password     string
+	Confirmation bool
+	Token        string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+}
+
+func CreateUserCollection(s *mgo.Session) {
+	session := s.Copy()
+	session.DB("cdm").C("user").EnsureIndex(mgo.Index{
+		Key:    []string{"email"},
+		Unique: true,
+	})
 }
 
 /*
@@ -37,28 +52,52 @@ func GetSession() (*MySession, error) {
 		log.Println(err)
 		return nil, err
 	}
+	CreateUserCollection(s)
 	M := &MySession{
 		s,
 	}
 	return M, nil
 }
 
-func (s *MySession) AddUser(user User) error {
+func JwtToken(e string) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": e,
+	})
+	fmt.Println(os.Getenv("JWT_SECRET"))
+	tokenS, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return tokenS
+}
+
+// TODO Confirmation TOken
+
+func (s *MySession) AddUser(user User) (User, error) {
 	session := s.Copy()
+	session.SetSafe(&mgo.Safe{})
 	defer session.Close()
 	c := session.DB("cdm").C("user")
-	err := c.Insert(&UserDatas{
-		Email:     user.Email,
-		Password:  user.Password,
-		Timestamp: time.Now(),
+
+	bulk := c.Bulk()
+	tk := JwtToken(user.Email)
+	bulk.Insert(&UserDatas{
+		Email:        user.Email,
+		Password:     user.Password,
+		Token:        tk,
+		Confirmation: false,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	})
-	if err != nil {
-		if mgo.IsDup(err) {
-			log.Println(err)
-			return err
-		}
+	r, err := bulk.Run()
+	log.Println(r, err)
+	if mgo.IsDup(err) {
+		return User{}, errors.New("Email deja utilise")
 	}
-	return nil
+	return User{
+		Email: user.Email,
+		Token: tk,
+	}, nil
 }
 
 func (s *MySession) TestCredentials(u User, pwd string, f func(string, string) bool) bool {
@@ -71,4 +110,26 @@ func (s *MySession) TestCredentials(u User, pwd string, f func(string, string) b
 		return false
 	}
 	return f(pwd, result.Password)
+}
+
+func (s *MySession) FindOneAndUpdate(t string) (User, error) {
+	session := s.Copy()
+	c := session.DB("cdm").C("user")
+	var u UserDatas
+	if err := c.Find(bson.M{
+		"token": t,
+	}).One(&u); err != nil {
+		return User{}, err
+	}
+	u.Confirmation = true
+	u.Token = ""
+	u.UpdatedAt = time.Now()
+	err := c.Update(bson.M{"email": u.Email}, u)
+	if err != nil {
+		return User{}, err
+	}
+	return User{
+		Email: u.Email,
+		Token: u.Token,
+	}, nil
 }

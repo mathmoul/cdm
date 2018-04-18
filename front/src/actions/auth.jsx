@@ -20,3 +20,9 @@ export const logout = () => (dispatch) => {
   localStorage.removeItem('cdmJWT')
   dispatch(userLoggedOut())
 }
+
+export const confirm = (token) => (dispatch) =>
+  api.user.confirm(token).then(user => {
+    localStorage.cdmJwt = user.token
+    dispatch(userLoggedIn(user))
+  })

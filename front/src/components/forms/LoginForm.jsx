@@ -53,7 +53,6 @@ class LoginForm extends React.Component {
 
   render () {
     const {data, errors, loading} = this.state
-    console.log(errors)
     return (
       <Form onSubmit={this.onSubmit} loading={loading}>
         {

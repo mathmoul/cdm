@@ -1,13 +1,33 @@
 package muxrouter
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
 )
+
+type Mhrw struct {
+	http.ResponseWriter
+}
+
+type JSON map[string]interface{}
+
+func (m *Mhrw) Success(i JSON) {
+	m.WriteHeader(200)
+	b, _ := json.Marshal(i)
+	io.WriteString(m, string(b))
+}
+
+func (m *Mhrw) Error(i JSON) {
+	m.WriteHeader(400)
+	b, _ := json.Marshal(i)
+	io.WriteString(m, string(b))
+}
 
 type Route struct {
 	Name        string           `json:"name"`
@@ -48,15 +68,6 @@ func Init() {
 	R = &MatchaRouter{
 		router,
 	}
-	R.AddRoute(Routes{
-		Route{
-			Name:        "login",
-			Method:      "POST",
-			Path:        "/auth",
-			HandlerFunc: Auth,
-			Protected:   false,
-		},
-	})
 }
 
 func GetRouter() *MatchaRouter {
@@ -66,12 +77,20 @@ func GetRouter() *MatchaRouter {
 	return R
 }
 
-func (r *MatchaRouter) AddRoute(routes Routes) error {
-	fmt.Println(routes)
-	for _, route := range routes {
+func (r *Routes) Mount(mounter string) {
+	y := *r
+	for k := range y {
+		y[k].Path = mounter + y[k].Path
+	}
+	r = &y
+}
+
+func (r *MatchaRouter) AddRoute(routes *Routes) error {
+	for _, route := range *routes {
 		if err := route.checkroute(); err != nil {
 			return err
 		}
+		log.Println("/api" + route.Path)
 		r.Handle("/api"+route.Path, route.HandlerFunc).Methods(route.Method).Name(route.Name)
 	}
 	return nil

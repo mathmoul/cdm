@@ -2,6 +2,7 @@ package main
 
 import (
 	"cdm/server/muxrouter"
+	"cdm/server/routes/authentication"
 	"net/http"
 	"os"
 
@@ -10,6 +11,8 @@ import (
 )
 
 func main() {
+	authentication.Authentication("/auth")
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "9090"
