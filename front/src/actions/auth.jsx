@@ -23,6 +23,9 @@ export const logout = () => (dispatch) => {
 
 export const confirm = (token) => (dispatch) =>
   api.user.confirm(token).then(user => {
-    localStorage.cdmJwt = user.token
+    localStorage.cdmJWT = user.token
     dispatch(userLoggedIn(user))
   })
+
+export const resetPasswordRequest = ({email}) => () =>
+  api.user.resetPasswordRequest(email)

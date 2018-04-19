@@ -33,10 +33,21 @@ class ConfirmationPage extends React.Component {
             <Icon name='checkmark'/>
             <Message.Content>
               <Message.Header>Account verified</Message.Header>
-              <Link to='/dashboard'/>
+              <Link to='/dashboard'>Dashboard</Link>
             </Message.Content>
           </Message>
         )}
+
+        {
+          !loading && !success && (
+            <Message negative icon>
+              <Icon name='warning sign'/>
+              <Message.Content>
+                <Message.Header>Invalid Token</Message.Header>
+              </Message.Content>
+            </Message>
+          )
+        }
       </div>
     )
   }

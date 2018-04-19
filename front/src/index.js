@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter, Route } from 'react-router-dom'
 
 import { createStore, applyMiddleware } from 'redux'
+import decode from 'jwt-decode'
 import { Provider } from 'react-redux'
 import thunk from 'redux-thunk'
 import rootReducer from './rootReducer'
@@ -18,18 +19,20 @@ import { userLoggedIn } from './actions/auth'
 
 const store = createStore(
   rootReducer,
-  composeWithDevTools(applyMiddleware(thunk)),
+  composeWithDevTools(applyMiddleware(thunk))
 )
 
 if (localStorage.cdmJWT) {
-  const user = { token: localStorage.cdmJWT}
+  const payload = decode(localStorage.cdmJWT)
+  const user = {token: localStorage.cdmJWT, email: payload.email, confirmed: payload.confirmed}
+  console.log(user)
   store.dispatch(userLoggedIn(user))
 }
 
 ReactDOM.render(
   <BrowserRouter>
     <Provider store={store}>
-      <Route component={App} />
+      <Route component={App}/>
     </Provider>
   </BrowserRouter>
   , document.getElementById('app'))

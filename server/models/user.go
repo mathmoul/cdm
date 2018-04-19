@@ -14,7 +14,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -54,12 +54,14 @@ func (c *UserCredentials) GetCredentials(r io.Reader) error {
 User Model
 */
 type User struct {
-	Email             string    `json:"email" bson:"email"`                         //required
-	PasswordHash      string    `json:"passwordHash" bson:"passwordHash"`           //required
-	Confirmed         bool      `json:"confirmed" bson:"confirmed"`                 // required
-	ConfirmationToken string    `json:"confirmationToken" bson:"confirmationToken"` //defaults to ""
-	CreatedAt         time.Time `json:"createdAt" bson:"createdAt"`                 //timestamp
-	UpdatedAt         time.Time `json:"updatedAt" bson:"updatedAt"`                 //timestamp
+	ID                bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Email             string        `json:"email" bson:"email"`                         //required
+	PasswordHash      string        `json:"passwordHash" bson:"passwordHash"`           //required
+	Confirmed         bool          `json:"confirmed" bson:"confirmed"`                 // required
+	ConfirmationToken string        `json:"confirmationToken" bson:"confirmationToken"` //defaults to ""
+	CreatedAt         time.Time     `json:"createdAt" bson:"createdAt"`                 //timestamp
+	UpdatedAt         time.Time     `json:"updatedAt" bson:"updatedAt"`                 //timestamp
+	IUser
 }
 
 /*
@@ -75,14 +77,19 @@ type UserReturnDatas struct {
 IUser interface
 */
 type IUser interface {
-	IsValidPassword( /*password */ )
-	SetPassword( /* password */ )
+	IsValidPassword(password string) bool
+	SetPassword()
+	SetTimestamp()
 	SetConfirmationToken()
-	GenerateConfirmationURL()
+	GenerateConfirmationURL() string
+	GeneratePasswordLink() string
 	GenerateJWT() string
-	ToAuthJSON()
+	GenerateResetPassword() string
+	ToAuthJSON() UserReturnDatas
 
-	Login()
+	Login() error
+	InsertNewUser() error
+	ConfirmConnection() (User, error)
 }
 
 /*
@@ -128,6 +135,10 @@ func (u *User) GenerateConfirmationURL() string {
 	//TODO remove static url
 }
 
+func (u *User) GeneratePasswordLink() string {
+	return `http://localhost:3000/reset_password/` + u.GenerateResetPassword()
+}
+
 /*
 GenerateJWT function
 */
@@ -135,6 +146,24 @@ func (u *User) GenerateJWT() string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email":     u.Email,
 		"confirmed": u.Confirmed,
+	})
+	tokenS, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return tokenS
+}
+
+func (u *User) GenerateResetPassword() string {
+	type z struct {
+		ID bson.ObjectId `json:"id"`
+		jwt.StandardClaims
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, z{
+		ID : u.ID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(1 * time.Second).Unix(),
+		},
 	})
 	tokenS, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
@@ -197,4 +226,27 @@ func (u *User) InsertNewUser() error {
 		return errors.New("Email deja utilise")
 	}
 	return nil
+}
+
+/*
+Confirm Connection function
+ */
+func (u *User) ConfirmConnection() (User, error) {
+	var nu User
+	session, err := database.GetSession()
+	if err != nil {
+		return User{}, err
+	}
+	collection := session.Copy().DB("cdm").C("user")
+	if err := collection.Find(bson.M{"confirmationToken": u.ConfirmationToken}).One(&nu);
+		err != nil {
+		return User{}, err
+	}
+	nu.ConfirmationToken = ""
+	nu.Confirmed = true
+	nu.UpdatedAt = time.Now()
+	if err := collection.Update(bson.M{"confirmationToken": u.ConfirmationToken}, nu); err != nil {
+		return User{}, err
+	}
+	return nu, nil
 }

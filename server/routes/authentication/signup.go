@@ -11,6 +11,7 @@ func fasterErrors(err error) muxrouter.JSON {
 }
 
 func Signup(w http.ResponseWriter, r *http.Request) {
+	// TODO email confirmation send u.SendEmailConfirmation()
 	var c models.UserCredentials
 	ww := muxrouter.Mhrw{ResponseWriter: w}
 
@@ -22,6 +23,5 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		ww.Error(fasterErrors(err))
 		return
 	}
-	// u.SendConfirmationEmail()
 	ww.Success(muxrouter.JSON{"user": c.Credentials.ToAuthJSON()})
 }

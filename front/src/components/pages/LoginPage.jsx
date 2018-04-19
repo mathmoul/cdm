@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import PropTypes from 'prop-types'
 
@@ -10,7 +11,8 @@ class LoginPage extends React.Component {
   render () {
     return (<div>
       <h1>Page de Login</h1>
-      <LoginForm submit={this.submit} />
+      <LoginForm submit={this.submit}/>
+      <Link to='/forgot_password'>Forgot password</Link>
     </div>)
   }
 
@@ -21,9 +23,9 @@ class LoginPage extends React.Component {
 
 LoginPage.propTypes = {
   history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired
   }).isRequired,
-  login: PropTypes.func.isRequired,
+  login: PropTypes.func.isRequired
 }
 
 export default connect(null, {login})(LoginPage)

@@ -32,6 +32,13 @@ func Authentication(mounter string) {
 			HandlerFunc: Confirmation,
 			Protected:   false,
 		},
+		muxrouter.Route{
+			Name: "resetPassword",
+			Method: "POST",
+			Path: mounter + "/reset_password_request",
+			HandlerFunc: ResetPassword,
+			Protected: false,
+		},
 	}
 	muxrouter.GetRouter().AddRoute(r)
 }
