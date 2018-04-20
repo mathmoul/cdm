@@ -58,6 +58,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// TODO compare old password with new if it is the same
+	// TODO add token from database and compare it so we can't use this token forever
 	u.PasswordHash = pw.Password
 	u.SetPassword()
 	if err := u.Update(); err != nil {
