@@ -54,7 +54,7 @@ func (c *UserCredentials) GetCredentials(r io.Reader) error {
 User Model
 */
 type User struct {
-	ID                bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	ID                bson.ObjectId `json:"_id" bson:"_id,omitempty"`
 	Email             string        `json:"email" bson:"email"`                         //required
 	PasswordHash      string        `json:"passwordHash" bson:"passwordHash"`           //required
 	Confirmed         bool          `json:"confirmed" bson:"confirmed"`                 // required
@@ -84,8 +84,11 @@ type IUser interface {
 	GenerateConfirmationURL() string
 	GeneratePasswordLink() string
 	GenerateJWT() string
-	GenerateResetPassword() string
+	ValidateToken() error
+	GenerateResetPasswordToken() string
 	ToAuthJSON() UserReturnDatas
+
+	FindWithId(string) (*User, error)
 
 	Login() error
 	InsertNewUser() error
@@ -136,7 +139,7 @@ func (u *User) GenerateConfirmationURL() string {
 }
 
 func (u *User) GeneratePasswordLink() string {
-	return `http://localhost:3000/reset_password/` + u.GenerateResetPassword()
+	return `http://localhost:3000/reset_password/` + u.GenerateResetPasswordToken()
 }
 
 /*
@@ -154,21 +157,40 @@ func (u *User) GenerateJWT() string {
 	return tokenS
 }
 
-func (u *User) GenerateResetPassword() string {
-	type z struct {
-		ID bson.ObjectId `json:"id"`
-		jwt.StandardClaims
+//TODO change name
+type Z struct {
+	ID bson.ObjectId `json:"_id"`
+	jwt.StandardClaims
+}
+
+func (u *User) ValidateToken() error {
+	token, err := jwt.ParseWithClaims(u.ConfirmationToken, &Z{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return err
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, z{
-		ID : u.ID,
+	if _, ok := token.Claims.(*Z); ok && token.Valid {
+		// TODO add compare claims.id with database
+		return nil
+	}
+	return errors.New("Wrong Token")
+
+}
+
+func (u *User) GenerateResetPasswordToken() string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Z{
+		ID: u.ID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(1 * time.Second).Unix(),
+			ExpiresAt: time.Now().Add(1 * 365 * 24 * time.Hour).Unix(),
 		},
 	})
 	tokenS, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// TODO save it into db for comparaison
 	return tokenS
 }
 
@@ -184,6 +206,34 @@ func (u *User) ToAuthJSON() UserReturnDatas {
 }
 
 //unique Validator
+
+func findId(dt string) bson.ObjectId {
+	token, err := jwt.ParseWithClaims(dt, &Z{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return ""
+	}
+	if claims, ok := token.Claims.(*Z); ok && token.Valid {
+		// TODO add compare claims.id with database
+		log.Println(claims)
+		return claims.ID
+	}
+	return ""
+}
+
+func (u *User) FindWithId(token string) (*User, error) {
+	session, err := database.GetSession()
+	if err != nil {
+		return &User{}, err
+	}
+	id := findId(token)
+	log.Println(id)
+	c := session.DB("cdm").C("user")
+	c.Find(bson.M{"_id": id}).One(u)
+	log.Println(u)
+	return u, nil
+}
 
 /*
 Login function
@@ -230,7 +280,7 @@ func (u *User) InsertNewUser() error {
 
 /*
 Confirm Connection function
- */
+*/
 func (u *User) ConfirmConnection() (User, error) {
 	var nu User
 	session, err := database.GetSession()
@@ -238,8 +288,7 @@ func (u *User) ConfirmConnection() (User, error) {
 		return User{}, err
 	}
 	collection := session.Copy().DB("cdm").C("user")
-	if err := collection.Find(bson.M{"confirmationToken": u.ConfirmationToken}).One(&nu);
-		err != nil {
+	if err := collection.Find(bson.M{"confirmationToken": u.ConfirmationToken}).One(&nu); err != nil {
 		return User{}, err
 	}
 	nu.ConfirmationToken = ""

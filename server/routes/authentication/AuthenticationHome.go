@@ -2,9 +2,24 @@ package authentication
 
 import (
 	"cdm/server/muxrouter"
+	"net/http"
 )
 
 // all routes with match /api/auth
+
+/*
+Authentication function
+*/
+
+func route(name string, method string, path string, f http.HandlerFunc) muxrouter.Route {
+	return muxrouter.Route{
+		Name:        name,
+		Method:      method,
+		Path:        path,
+		HandlerFunc: f,
+		Protected:   false,
+	}
+}
 
 /*
 Authentication function
@@ -33,12 +48,14 @@ func Authentication(mounter string) {
 			Protected:   false,
 		},
 		muxrouter.Route{
-			Name: "resetPassword",
-			Method: "POST",
-			Path: mounter + "/reset_password_request",
-			HandlerFunc: ResetPassword,
-			Protected: false,
+			Name:        "resetPasswordrequest",
+			Method:      "POST",
+			Path:        mounter + "/reset_password_request",
+			HandlerFunc: ResetPasswordRequest,
+			Protected:   false,
 		},
+		route("validateToken", "POST", mounter+"/validate_token", ValidateToken),
+		route("resetpassword", "POST", mounter+"/reset_password", ResetPassword),
 	}
 	muxrouter.GetRouter().AddRoute(r)
 }

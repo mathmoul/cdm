@@ -1,59 +1,57 @@
 package authentication
 
 import (
-	"net/http"
-	"io"
-	"io/ioutil"
+	"cdm/server/models"
 	"cdm/server/muxrouter"
 	"encoding/json"
 	"errors"
-	"cdm/server/database"
-	"gopkg.in/mgo.v2/bson"
-	"cdm/server/models"
-	"cdm/server/mailer"
+	"io"
+	"io/ioutil"
 	"log"
-	"fmt"
+	"net/http"
 )
 
-func getEmail(reader io.Reader) (string, error) {
-	var i muxrouter.JSON
-	body, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return "", err
-	}
-	if err := json.Unmarshal(body, &i); err != nil {
-		return "", err
-	}
-	email, ok := i["email"].(string)
-	if !ok {
-		return "", errors.New("Issue with email")
-	}
-	return email, nil
+type datas struct {
+	A a `json:"data"`
+}
+type a struct {
+	Password             string `json:"password"`
+	PasswordConfirmation string `json:"passwordConfirmation"`
+	Token                string `json:"token"`
 }
 
+func getPassword(reader io.Reader) (a, error) {
+	var d datas
+	body, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return a{}, err
+	}
+	if err := json.Unmarshal(body, &d); err != nil {
+		return a{}, err
+	}
+	log.Println(d)
+	return d.A, nil
+}
+
+/*
+ResetPassword function
+*/
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
-	var u models.User
-	var mailer mailer.Mailer
-	mail, err := getEmail(r.Body)
+	pw, err := getPassword(r.Body)
 	ww := muxrouter.Mhrw{ResponseWriter: w}
 	if err != nil {
 		ww.Error(fasterErrors(err))
 		return
 	}
-	s, err := database.GetSession()
-	if err != nil {
-		ww.Error(fasterErrors(err))
-		return
+	if pw.Password == "" || pw.PasswordConfirmation == "" || pw.Token == "" {
+		ww.Error(fasterErrors(errors.New("aie")))
 	}
-	c := s.Copy().DB("cdm").C("user")
-	log.Println(mail)
-	if err := c.Find(bson.M{"email": mail}).One(&u); err != nil {
-		ww.Error(fasterErrors(errors.New("Email inconnu")))
-		return
+	u := models.User{
+		ConfirmationToken: pw.Token,
 	}
-	if err := mailer.SendResetPasswordEmail(u); err != nil {
+	if err := u.ValidateToken(); err != nil {
 		ww.Error(fasterErrors(err))
 	}
-	fmt.Println(u.GeneratePasswordLink())
-	ww.Success(nil)
+	u.FindWithId(pw.Token)
+	return
 }

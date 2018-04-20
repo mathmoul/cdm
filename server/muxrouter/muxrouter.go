@@ -28,6 +28,11 @@ func (m *Mhrw) Error(i JSON) {
 	b, _ := json.Marshal(i)
 	io.WriteString(m, string(b))
 }
+func (m *Mhrw) Error401(i JSON) {
+	m.WriteHeader(http.StatusUnauthorized)
+	b, _ := json.Marshal(i)
+	io.WriteString(m, string(b))
+}
 
 type Route struct {
 	Name        string           `json:"name"`
