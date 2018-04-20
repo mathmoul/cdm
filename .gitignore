@@ -7,9 +7,12 @@ react/.idea
 
 front/node_modules
 front/.idea
+front/tmp
 front/.code
 
 server/.idea
 server/tmp
 server/.code
-sever/db
+server/dist/
+server/db
+
