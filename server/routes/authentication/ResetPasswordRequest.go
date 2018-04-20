@@ -47,7 +47,6 @@ func ResetPasswordRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := s.Copy().DB("cdm").C("user")
-	log.Println(mail)
 	if err := c.Find(bson.M{"email": mail}).One(&u); err != nil {
 		ww.Error(fasterErrors(errors.New("Email inconnu")))
 		return

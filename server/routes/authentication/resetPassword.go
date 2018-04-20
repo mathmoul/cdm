@@ -7,7 +7,6 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -29,7 +28,6 @@ func getPassword(reader io.Reader) (a, error) {
 	if err := json.Unmarshal(body, &d); err != nil {
 		return a{}, err
 	}
-	log.Println(d)
 	return d.A, nil
 }
 
@@ -59,6 +57,8 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	// TODO compare old password with new if it is the same
 	// TODO add token from database and compare it so we can't use this token forever
+
+	// TODO mailing => you just reset your password
 	u.PasswordHash = pw.Password
 	u.SetPassword()
 	if err := u.Update(); err != nil {

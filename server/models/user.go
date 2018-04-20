@@ -16,6 +16,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
+	"fmt"
 )
 
 /*
@@ -200,6 +201,7 @@ func (u *User) GenerateResetPasswordToken() string {
 ToAuthJSON function
 */
 func (u *User) ToAuthJSON() UserReturnDatas {
+	fmt.Println(u.Confirmed)
 	return UserReturnDatas{
 		Email:     u.Email,
 		Confirmed: u.Confirmed,
@@ -218,7 +220,6 @@ func findId(dt string) bson.ObjectId {
 	}
 	if claims, ok := token.Claims.(*Z); ok && token.Valid {
 		// TODO add compare claims.id with database
-		log.Println(claims)
 		return claims.ID
 	}
 	return ""
@@ -230,10 +231,8 @@ func (u *User) FindWithId(token string) error {
 		return err
 	}
 	id := findId(token)
-	log.Println(id)
 	c := session.Copy().DB("cdm").C("user")
 	c.Find(bson.M{"_id": id}).One(u)
-	log.Println(u)
 	return nil
 }
 
@@ -243,6 +242,7 @@ func (u *User) Update() error {
 		return err
 	}
 	c := session.Copy().DB("cdm").C("user")
+	fmt.Println(u)
 	if err := c.Update(bson.M{"_id": u.ID}, u); err != nil {
 		return err
 	}
@@ -261,13 +261,13 @@ func (u *User) Login() error {
 	}
 	c := session.Copy().DB("cdm").C("user")
 	err = c.Find(bson.M{"email": u.Email}).One(&foundUser)
-	log.Println(foundUser)
 	if err != nil {
 		return err
 	}
 	if !u.IsValidPassword(foundUser.PasswordHash) {
 		return errors.New("Invalid Credentials")
 	}
+	*u = foundUser
 	return nil
 }
 

@@ -1,36 +1,31 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import PropType from 'prop-types'
+import PropTypes from 'prop-types'
 import ConfirmEmailMessage from '../messages/ConfirmEmailMessage'
-import { Button } from 'semantic-ui-react'
-import {Link} from 'react-router-dom'
 
-import * as actions from '../../actions/auth'
+import AddBookCtA from '../ctas/AddBookCtA'
+import { allBooksSelector } from '../../reducers/books'
 
-const DashboardPage = ({isConfirmed, isAuthenticated, logout}) => (
+const DashboardPage = ({isConfirmed, books}) => (
   <div>
-    {isAuthenticated ? (
-      <Button onClick={() => logout()}>Logout</Button>) : (
-      <div>
-        <Link to='/login'>Login</Link> or <Link to='/signup'>Signup</Link>
-      </div>
-    )
-    }
     {!isConfirmed && <ConfirmEmailMessage/>}
+
+    {books.length === 0 && <AddBookCtA/>}
   </div>
 )
 
 DashboardPage.propTypes = {
-  isConfirmed: PropType.bool.isRequired,
-  isAuthenticated: PropType.bool.isRequired,
-  logout: PropType.func.isRequired
+  isConfirmed: PropTypes.bool.isRequired,
+  books: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string.isRequired
+  }).isRequired).isRequired
 }
 
 function mapStateProps (state) {
   return {
     isConfirmed: !!state.user.confirmed,
-    isAuthenticated: !!state.user.token
+    books: allBooksSelector(state)
   }
 }
 
-export default connect(mapStateProps, {logout: actions.logout})(DashboardPage)
+export default connect(mapStateProps)(DashboardPage)

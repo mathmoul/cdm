@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "eslint": "^4.19.1",
+    "gravatar-url": "^2.0.0",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.5",
     "prop-types": "^15.6.1",
@@ -21,8 +22,9 @@
     "react-scripts": "^1.1.4",
     "redux": "^4.0.0",
     "redux-thunk": "^2.2.0",
+    "reselect": "^3.0.1",
     "semantic-ui-css": "^2.3.1",
-    "semantic-ui-react": "^0.79.1",
+    "semantic-ui-react": "0.79",
     "validator": "^9.4.1"
   },
   "devDependencies": {
