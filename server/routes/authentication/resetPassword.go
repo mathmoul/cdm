@@ -51,7 +51,19 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := u.ValidateToken(); err != nil {
 		ww.Error(fasterErrors(err))
+		return
 	}
-	u.FindWithId(pw.Token)
-	return
+	if err := u.FindWithId(pw.Token); err != nil {
+		ww.Error(fasterErrors(err))
+		return
+	}
+	// TODO compare old password with new if it is the same
+	u.PasswordHash = pw.Password
+	u.SetPassword()
+	if err := u.Update(); err != nil {
+		ww.Error(fasterErrors(err))
+		return
+
+	}
+	ww.Success(nil)
 }

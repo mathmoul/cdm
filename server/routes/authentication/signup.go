@@ -4,6 +4,7 @@ import (
 	"cdm/server/models"
 	"cdm/server/muxrouter"
 	"net/http"
+	"log"
 )
 
 func fasterErrors(err error) muxrouter.JSON {
@@ -23,5 +24,6 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		ww.Error(fasterErrors(err))
 		return
 	}
+	log.Println(c.Credentials.GenerateConfirmationURL())
 	ww.Success(muxrouter.JSON{"user": c.Credentials.ToAuthJSON()})
 }

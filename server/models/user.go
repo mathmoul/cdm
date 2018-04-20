@@ -88,7 +88,9 @@ type IUser interface {
 	GenerateResetPasswordToken() string
 	ToAuthJSON() UserReturnDatas
 
-	FindWithId(string) (*User, error)
+	FindWithId(string) error
+
+	Update() error
 
 	Login() error
 	InsertNewUser() error
@@ -222,17 +224,29 @@ func findId(dt string) bson.ObjectId {
 	return ""
 }
 
-func (u *User) FindWithId(token string) (*User, error) {
+func (u *User) FindWithId(token string) error {
 	session, err := database.GetSession()
 	if err != nil {
-		return &User{}, err
+		return err
 	}
 	id := findId(token)
 	log.Println(id)
-	c := session.DB("cdm").C("user")
+	c := session.Copy().DB("cdm").C("user")
 	c.Find(bson.M{"_id": id}).One(u)
 	log.Println(u)
-	return u, nil
+	return nil
+}
+
+func (u *User) Update() error {
+	session, err := database.GetSession()
+	if err != nil {
+		return err
+	}
+	c := session.Copy().DB("cdm").C("user")
+	if err := c.Update(bson.M{"_id": u.ID}, u); err != nil {
+		return err
+	}
+	return nil
 }
 
 /*
