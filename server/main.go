@@ -3,18 +3,18 @@ package main
 import (
 	"cdm/server/muxrouter"
 	"cdm/server/routes/authentication"
-	"cdm/server/routes/books"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/handlers"
 	_ "github.com/joho/godotenv/autoload"
+	"cdm/server/routes/leagues"
 )
 
 func main() {
-	authentication.Authentication("/auth")
-	books.Books("/books")
-
+	authentication.AuthenticationRoutes("/auth")
+	//books.Books("/books")
+	leagues.LeaguesRoutes("/leagues")
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "9090"

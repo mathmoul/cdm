@@ -1,13 +1,27 @@
 package database
 
-import "cmd/database/mongoDb"
+import (
+	"cdm/server/database/mongoDb"
+	"log"
+)
 
 type Model interface {
-	Connection() Connection
 }
 
-type Connection interface{}
+type DB interface{}
 
-func init() {
-	c Connection := mongoDB.GetSession()
+var Db DB
+
+func init () {}
+
+func GetDb () DB  {
+	if Db == nil {
+		s,err := mongoDb.GetSession()
+		if err == nil {
+			log.Fatal(err)
+		}
+		Db = s
+	}
+	return Db
+
 }

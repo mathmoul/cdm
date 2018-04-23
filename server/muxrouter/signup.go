@@ -1,11 +1,11 @@
 package muxrouter
 
 import (
-	"cdm/server/database"
 	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"cdm/server/database/mongoDb"
 )
 
 type SU struct {
@@ -36,7 +36,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		m.sendErrorMessage(err.Error(), w, 400)
 		return
 	}
-	c, err := database.GetSession()
+	c, err := mongoDb.GetSession()
 	if err != nil {
 		m.sendErrorMessage(err.Error(), w, 400)
 		return
@@ -45,7 +45,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.sendErrorMessage(err.Error(), w, 400)
 	}
-	u, err := c.AddUser(database.User{
+	u, err := c.AddUser(mongoDb.User{
 		Email:    su.NewUser.Email,
 		Password: hashP,
 	})

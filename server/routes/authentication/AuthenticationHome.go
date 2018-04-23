@@ -24,38 +24,38 @@ func route(name string, method string, path string, f http.HandlerFunc) muxroute
 /*
 Authentication function
 */
-func Authentication(mounter string) {
+func AuthenticationRoutes(mounter string) {
 	r := &muxrouter.Routes{
 		muxrouter.Route{
 			Name:        "login",
 			Method:      "POST",
 			Path:        mounter,
-			HandlerFunc: Auth,
+			HandlerFunc: Authentication,
 			Protected:   false,
 		},
-		muxrouter.Route{
-			Name:        "signup",
-			Method:      "POST",
-			Path:        "/signup",
-			HandlerFunc: Signup,
-			Protected:   false,
-		},
-		muxrouter.Route{
-			Name:        "confirm",
-			Method:      "POST",
-			Path:        mounter + "/confirmation",
-			HandlerFunc: Confirmation,
-			Protected:   false,
-		},
-		muxrouter.Route{
-			Name:        "resetPasswordrequest",
-			Method:      "POST",
-			Path:        mounter + "/reset_password_request",
-			HandlerFunc: ResetPasswordRequest,
-			Protected:   false,
-		},
-		route("validateToken", "POST", mounter+"/validate_token", ValidateToken),
-		route("resetpassword", "POST", mounter+"/reset_password", ResetPassword),
+		//muxrouter.Route{
+		//	Name:        "signup",
+		//	Method:      "POST",
+		//	Path:        "/signup",
+		//	HandlerFunc: Signup,
+		//	Protected:   false,
+		//},
+		//muxrouter.Route{
+		//	Name:        "confirm",
+		//	Method:      "POST",
+		//	Path:        mounter + "/confirmation",
+		//	HandlerFunc: Confirmation,
+		//	Protected:   false,
+		//},
+		//muxrouter.Route{
+		//	Name:        "resetPasswordrequest",
+		//	Method:      "POST",
+		//	Path:        mounter + "/reset_password_request",
+		//	HandlerFunc: ResetPasswordRequest,
+		//	Protected:   false,
+		//},
+		//route("validateToken", "POST", mounter+"/validate_token", ValidateToken),
+		//route("resetpassword", "POST", mounter+"/reset_password", ResetPassword),
 	}
 	muxrouter.GetRouter().AddRoute(r)
 }

@@ -133,3 +133,12 @@ func (s *MySession) FindOneAndUpdate(t string) (User, error) {
 		Token: u.Token,
 	}, nil
 }
+
+func GetDatabaseCopy() *mgo.Database {
+	session, err := GetSession()
+	defer session.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return session.Copy().DB("cdm")
+}

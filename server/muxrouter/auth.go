@@ -1,7 +1,6 @@
 package muxrouter
 
 import (
-	"cdm/server/database"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,10 +10,11 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
+	"cdm/server/database/mongoDb"
 )
 
 type C struct {
-	Credentials database.User `json:"credentials"`
+	Credentials mongoDb.User `json:"credentials"`
 }
 
 func HashPassword(password string) (string, error) {
@@ -50,7 +50,7 @@ func JwtToken(e string) string {
 	return tokenS
 }
 
-func (m *Message) sendSuccessMessage(w http.ResponseWriter, u database.User) {
+func (m *Message) sendSuccessMessage(w http.ResponseWriter, u mongoDb.User) {
 	w.WriteHeader(200)
 	b, _ := json.Marshal(map[string]interface{}{
 		"user": map[string]interface{}{
