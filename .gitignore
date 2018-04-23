@@ -14,5 +14,5 @@ server/.idea
 server/tmp
 server/.code
 server/dist/
-server/db
-
+server/db/*
+server/dbs/*

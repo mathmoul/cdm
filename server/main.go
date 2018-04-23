@@ -3,6 +3,7 @@ package main
 import (
 	"cdm/server/muxrouter"
 	"cdm/server/routes/authentication"
+	"cdm/server/routes/books"
 	"net/http"
 	"os"
 
@@ -12,6 +13,7 @@ import (
 
 func main() {
 	authentication.Authentication("/auth")
+	books.Books("/books")
 
 	port := os.Getenv("PORT")
 	if port == "" {

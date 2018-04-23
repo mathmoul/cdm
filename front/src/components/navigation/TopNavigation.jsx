@@ -12,6 +12,9 @@ const TopNavigation = ({user, logout}) => (
     <Menu.Item as={Link} to='/dashboard'>
       Dashboard
     </Menu.Item>
+    <Menu.Item as={Link} to='/league/new'>
+      Nouvelle ligue
+    </Menu.Item>
     <Menu.Menu position="right">
       <Dropdown trigger={<Image avatar src={gravatarUrl(user.email)}/>}>
         <Dropdown.Menu>

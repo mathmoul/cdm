@@ -17,6 +17,8 @@ import 'semantic-ui-css/semantic.min.css'
 import registerServiceWorker from './registerServiceWorker'
 import { userLoggedIn } from './actions/auth'
 
+import setAuthorizationHeader from './utils/setAuthorizationHeader'
+
 const store = createStore(
   rootReducer,
   composeWithDevTools(applyMiddleware(thunk))
@@ -24,15 +26,19 @@ const store = createStore(
 
 if (localStorage.cdmJWT) {
   const payload = decode(localStorage.cdmJWT)
-  const user = {token: localStorage.cdmJWT, email: payload.email, confirmed: payload.confirmed}
-  console.log(user)
+  const user = {
+    token: localStorage.cdmJWT,
+    email: payload.email,
+    confirmed: payload.confirmed
+  }
+  setAuthorizationHeader(localStorage.cdmJWT)
   store.dispatch(userLoggedIn(user))
 }
 
 ReactDOM.render(
   <BrowserRouter>
     <Provider store={store}>
-      <Route component={App}/>
+      <Route component={App} />
     </Provider>
   </BrowserRouter>
   , document.getElementById('app'))
