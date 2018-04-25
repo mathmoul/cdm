@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { Form, Button, Segment, Grid, Image } from 'semantic-ui-react'
+import {Button, Form, Grid, Image, Segment} from 'semantic-ui-react'
 
 import InlineError from "./../messages/InlineError"
 
@@ -37,13 +37,13 @@ class BookForm extends React.Component {
     onSubmit = e => {
         e.preventDefault()
         const errors = this.validate(this.state.data)
-        this.setState({ errors })
+        this.setState({errors})
         if (Object.keys(errors).length === 0) {
-            this.setState({ loading: true })
+            this.setState({loading: true})
             this.props
                 .submit(this.state.data)
                 .catch(err =>
-                    this.setState({ errors: err.response.data.errors, loading: false })
+                    this.setState({errors: err.response.data.errors, loading: false})
                 )
         }
     }
@@ -56,7 +56,6 @@ class BookForm extends React.Component {
 
 
     componentWillReceiveProps(props) {
-        
         this.setState({
             data: {
                 id: props.book.id,
@@ -70,7 +69,7 @@ class BookForm extends React.Component {
     }
 
     render() {
-        const { errors, data } = this.state
+        const {errors, data} = this.state
         return (
             <Segment>
                 <Form onSubmit={this.onSubmit} loading={this.loading}>
@@ -87,7 +86,7 @@ class BookForm extends React.Component {
                                         value={data.title}
                                         onChange={this.onChange}
                                     />
-                                    {errors.title && <InlineError text={errors.title} />}
+                                    {errors.title && <InlineError text={errors.title}/>}
                                 </Form.Field>
 
 
@@ -101,7 +100,7 @@ class BookForm extends React.Component {
                                         value={data.author}
                                         onChange={this.onChange}
                                     />
-                                    {errors.author && <InlineError text={errors.author} />}
+                                    {errors.author && <InlineError text={errors.author}/>}
                                 </Form.Field>
 
                                 <Form.Field error={!!errors.pages}>
@@ -113,14 +112,14 @@ class BookForm extends React.Component {
                                         value={data.pages}
                                         onChange={this.onChangeNumber}
                                     />
-                                    {errors.pages && <InlineError text={errors.pages} />}
+                                    {errors.pages && <InlineError text={errors.pages}/>}
                                 </Form.Field>
 
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
                             <Grid.Column>
-                                <Image size="small" src={data.cover} />
+                                <Image size="small" src={data.cover}/>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

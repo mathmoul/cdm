@@ -1,7 +1,6 @@
 package models
 
 import (
-	"cdm/server/database/mongoDb"
 	"encoding/json"
 	"errors"
 	"io"
@@ -16,6 +15,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"fmt"
+	"cdm/server/database/mongoDb"
 )
 
 /*
@@ -41,15 +41,29 @@ Users Model
 */
 type Users struct {
 	ID                bson.ObjectId `json:"_id" bson:"_id,omitempty"`
-	Email             string        `json:"email" bson:"email"`                         //required
-	PasswordHash      string        `json:"passwordHash" bson:"passwordHash"`           //required
-	Confirmed         bool          `json:"confirmed" bson:"confirmed"`                 // required
+	Email             string        `json:"email" bson:"email"`               //required
+	PasswordHash      string        `json:"passwordHash" bson:"passwordHash"` //required
+	Confirmed         bool          `json:"confirmed" bson:"confirmed"`       // required
+	Admin             bool          `json:"admin" bson:"admin"`
 	ConfirmationToken string        `json:"confirmationToken" bson:"confirmationToken"` //defaults to ""
 	CreatedAt         time.Time     `json:"createdAt" bson:"createdAt"`                 //timestamp
 	UpdatedAt         time.Time     `json:"updatedAt" bson:"updatedAt"`                 //timestamp
 	IUsers
-	Model
 	Collection        *mgo.Collection
+}
+
+func NewUsers() *Users {
+	return &Users{
+		ID:                "",
+		Admin:             false,
+		Email:             "",
+		PasswordHash:      "",
+		Collection:        mongoDb.GetDb().C("users"),
+		ConfirmationToken: "",
+		Confirmed:         false,
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
+	}
 }
 
 /*
@@ -58,6 +72,7 @@ UsersReturnDatas type
 type UsersReturnDatas struct {
 	Email     string `json:"email"`
 	Confirmed bool   `json:"confirmed"`
+	Admin     bool   `json:"admin"`
 	Token     string `json:"token"`
 }
 
@@ -67,18 +82,18 @@ IUsers interface
 type IUsers interface {
 	isValidPassword(password string) bool
 	SetPassword()
-	SetTimestamp()
-	SetConfirmationToken()
+	setTimestamp()
+	setConfirmationToken()
 	GenerateConfirmationURL() string
 	GeneratePasswordLink() string
-	GenerateJWT() string
+	generateJWT() string
 	ValidateToken() error
 	GenerateResetPasswordToken() string
 	ToAuthJSON() UsersReturnDatas
 
 	FindWithId(string) error
 
-	Update() error
+	Update() (*mgo.BulkResult, error)
 
 	Login(foundUsers Users) error
 	InsertNewUsers() error
@@ -109,7 +124,7 @@ func (u *Users) SetPassword() {
 /*
 SetTimestamp function
 */
-func (u *Users) SetTimestamp() {
+func (u *Users) setTimestamp() {
 	u.CreatedAt = time.Now()
 	u.UpdatedAt = time.Now()
 }
@@ -117,8 +132,8 @@ func (u *Users) SetTimestamp() {
 /*
 SetConfirmationToken function
 */
-func (u *Users) SetConfirmationToken() {
-	u.ConfirmationToken = u.GenerateJWT()
+func (u *Users) setConfirmationToken() {
+	u.ConfirmationToken = u.generateJWT()
 }
 
 /*
@@ -136,10 +151,11 @@ func (u *Users) GeneratePasswordLink() string {
 /*
 GenerateJWT function
 */
-func (u *Users) GenerateJWT() string {
+func (u *Users) generateJWT() string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email":     u.Email,
 		"confirmed": u.Confirmed,
+		"admin":     u.Admin,
 	})
 	tokenS, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
@@ -158,6 +174,7 @@ func (u *Users) ValidateToken() error {
 	token, err := jwt.ParseWithClaims(u.ConfirmationToken, &Z{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
+	fmt.Println(err)
 	if err != nil {
 		return err
 	}
@@ -173,7 +190,7 @@ func (u *Users) GenerateResetPasswordToken() string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Z{
 		ID: u.ID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(1 * 365 * 24 * time.Hour).Unix(),
+			ExpiresAt: time.Now().Add(31 * 24 * time.Hour).Unix(), // token is valid for 31 days => one month
 		},
 	})
 	tokenS, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
@@ -193,7 +210,8 @@ func (u *Users) ToAuthJSON() UsersReturnDatas {
 	return UsersReturnDatas{
 		Email:     u.Email,
 		Confirmed: u.Confirmed,
-		Token:     u.GenerateJWT(),
+		Admin:     u.Admin,
+		Token:     u.generateJWT(),
 	}
 }
 
@@ -214,70 +232,32 @@ func findId(dt string) bson.ObjectId {
 }
 
 func (u *Users) FindWithId(token string) error {
-	session, err := mongoDb.GetSession()
-	if err != nil {
-		return err
-	}
-	id := findId(token)
-	c := session.Copy().DB("cdm").C("user")
-	c.Find(bson.M{"_id": id}).One(u)
-	return nil
+	return u.Collection.Find(bson.M{"_id": findId(token)}).One(u)
 }
 
-func (u *Users) Update() error {
-	session, err := mongoDb.GetSession()
-	if err != nil {
-		return err
-	}
-	c := session.Copy().DB("cdm").C("user")
-	fmt.Println(u)
-	if err := c.Update(bson.M{"_id": u.ID}, u); err != nil {
-		return err
-	}
-	return nil
-}
+func (u *Users) Update() (*mgo.BulkResult, error) {
+	var b *mgo.Bulk
 
-/*
-InsertNewUsers function
-*/
-func (u *Users) InsertNewUsers() error {
-	u.SetPassword()
-	u.SetTimestamp()
-	u.SetConfirmationToken()
-	u.Confirmed = false
-	session, err := mongoDb.GetSession()
-	if err != nil {
-		return err
-	}
-	b := session.Copy().DB("cdm").C("user").Bulk()
-	b.Insert(u)
-	_, err = b.Run()
-	if mgo.IsDup(err) {
-		return errors.New("Email deja utilise")
-	}
-	return nil
+	u.UpdatedAt = time.Now()
+	b = u.Collection.Bulk()
+	b.Update(bson.M{"_id": u.ID}, u)
+	return b.Run()
 }
 
 /*
 Confirm Connection function
 */
-func (u *Users) ConfirmConnection() (Users, error) {
-	var nu Users
-	session, err := mongoDb.GetSession()
-	if err != nil {
-		return Users{}, err
-	}
-	collection := session.Copy().DB("cdm").C("user")
-	if err := collection.Find(bson.M{"confirmationToken": u.ConfirmationToken}).One(&nu); err != nil {
-		return Users{}, err
+func (u *Users) ConfirmConnection() (nu Users, err error) {
+	if err = u.Collection.Find(bson.M{"confirmationToken": u.ConfirmationToken}).One(&nu); err != nil {
+		return
 	}
 	nu.ConfirmationToken = ""
 	nu.Confirmed = true
 	nu.UpdatedAt = time.Now()
-	if err := collection.Update(bson.M{"confirmationToken": u.ConfirmationToken}, nu); err != nil {
-		return Users{}, err
-	}
-	return nu, nil
+	b := u.Collection.Bulk()
+	b.Update(bson.M{"confirmationToken": u.ConfirmationToken}, nu)
+	_, err = b.Run()
+	return
 }
 
 //PUBLIC FUNCTIONS
@@ -293,6 +273,17 @@ func (u *Users) Login(foundUsers Users) (err error) {
 	return
 }
 
+func (u *Users) InsertNewUsers() (err error) {
+	u.SetPassword()
+	u.setTimestamp()
+	u.setConfirmationToken()
+	u.Confirmed = false
+	if _, err = u.NewUsers(); mgo.IsDup(err) {
+		return
+	}
+	return
+}
+
 // New Functions
 /*
 json :
@@ -305,10 +296,10 @@ json :
 }
  */
 
-func (u *Users) ParseBody(reader io.Reader) (l Credentials, err error) {
+func (u *Users) ParseBody(name string, reader io.Reader) (l Credentials, err error) {
 	var b []byte
 	m := map[string]Credentials{
-		"credentials": l,
+		name: l,
 	}
 	b, err = ioutil.ReadAll(reader)
 	if err != nil {
@@ -317,8 +308,10 @@ func (u *Users) ParseBody(reader io.Reader) (l Credentials, err error) {
 	if err = json.Unmarshal(b, &m); err != nil {
 		return
 	}
-	u.PasswordHash = m["credentials"].Password
-	u.Email = m["credentials"].Email
+	u.PasswordHash = m[name].Password
+	l.Password = m[name].Password
+	u.Email = m[name].Email
+	l.Email = m[name].Email
 	return
 }
 
@@ -326,13 +319,15 @@ func (u *Users) ParseBody(reader io.Reader) (l Credentials, err error) {
 Database functions
  */
 
-func (u *Users) GetModelCollection() *mgo.Collection {
-	return u.Model.GetDb().C("users")
-}
-
 func (u *Users) GetOneByEmail(email string) (nu Users, err error) {
 	err = u.Collection.Find(bson.M{"email": email}).One(&nu)
 	return
+}
+
+func (u *Users) NewUsers() (*mgo.BulkResult, error) {
+	b := u.Collection.Bulk()
+	b.Insert(u)
+	return b.Run()
 }
 
 /*

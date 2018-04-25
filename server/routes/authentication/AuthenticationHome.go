@@ -24,7 +24,7 @@ func route(name string, method string, path string, f http.HandlerFunc) muxroute
 /*
 Authentication function
 */
-func AuthenticationRoutes(mounter string) {
+func Routes(mounter string) {
 	r := &muxrouter.Routes{
 		muxrouter.Route{
 			Name:        "login",
@@ -33,29 +33,41 @@ func AuthenticationRoutes(mounter string) {
 			HandlerFunc: Authentication,
 			Protected:   false,
 		},
-		//muxrouter.Route{
-		//	Name:        "signup",
-		//	Method:      "POST",
-		//	Path:        "/signup",
-		//	HandlerFunc: Signup,
-		//	Protected:   false,
-		//},
-		//muxrouter.Route{
-		//	Name:        "confirm",
-		//	Method:      "POST",
-		//	Path:        mounter + "/confirmation",
-		//	HandlerFunc: Confirmation,
-		//	Protected:   false,
-		//},
-		//muxrouter.Route{
-		//	Name:        "resetPasswordrequest",
-		//	Method:      "POST",
-		//	Path:        mounter + "/reset_password_request",
-		//	HandlerFunc: ResetPasswordRequest,
-		//	Protected:   false,
-		//},
-		//route("validateToken", "POST", mounter+"/validate_token", ValidateToken),
-		//route("resetpassword", "POST", mounter+"/reset_password", ResetPassword),
+		muxrouter.Route{
+			Name:        "signup",
+			Method:      "POST",
+			Path:        "/signup",
+			HandlerFunc: Signup,
+			Protected:   false,
+		},
+		muxrouter.Route{
+			Name:        "confirm",
+			Method:      "POST",
+			Path:        mounter + "/confirmation",
+			HandlerFunc: Confirmation,
+			Protected:   false,
+		},
+		muxrouter.Route{
+			Name:        "resetPasswordrequest",
+			Method:      "POST",
+			Path:        mounter + "/reset_password_request",
+			HandlerFunc: ResetPasswordRequest,
+			Protected:   false,
+		},
+		muxrouter.Route{
+			Name:        "validateToken",
+			Method:      "POST",
+			Path:        mounter + "/validate_token",
+			HandlerFunc: ValidateToken,
+			Protected:   false,
+		},
+		muxrouter.Route{
+			Name:        "resetpassword",
+			Method:      "POST",
+			Path:        mounter + "/reset_password",
+			HandlerFunc: ResetPassword,
+			Protected:   false,
+		},
 	}
 	muxrouter.GetRouter().AddRoute(r)
 }

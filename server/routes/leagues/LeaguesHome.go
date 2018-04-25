@@ -4,7 +4,7 @@ import (
 	"cdm/server/muxrouter"
 )
 
-func LeaguesRoutes(mounter string) {
+func Routes(mounter string) {
 	r := &muxrouter.Routes{
 		muxrouter.Route{
 			Name:        "All",
@@ -21,17 +21,24 @@ func LeaguesRoutes(mounter string) {
 			Protected:   false,
 		},
 		muxrouter.Route{
-			Name:   "New",
-			Method: "POST",
-			Path : mounter,
+			Name:        "New",
+			Method:      "POST",
+			Path:        mounter,
 			HandlerFunc: CreateLeague,
-			Protected: true,
+			Protected:   true,
 		},
 		muxrouter.Route{
 			Name:        "Update",
 			Method:      "PUT",
 			Path:        mounter + "/:id",
 			HandlerFunc: UpdateOne,
+			Protected:   false,
+		},
+		muxrouter.Route{
+			Name:        "Delete",
+			Method:      "DELETE",
+			Path:        mounter + "/:id",
+			HandlerFunc: DeleteLeague,
 			Protected:   false,
 		},
 	}

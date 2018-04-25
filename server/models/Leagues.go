@@ -1,3 +1,4 @@
+// Model for league
 package models
 
 import (
@@ -6,12 +7,19 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
+	"cdm/server/database/mongoDb"
 )
 
+// League Model
 type League struct {
-	Model
 	Collection *mgo.Collection
 	// TODO Update model with requests
+}
+
+func NewLeague() *League {
+	return &League{
+		Collection: mongoDb.GetDb().C("league"),
+	}
 }
 
 func (l *League) ParseBody(body io.Reader) error {
@@ -25,14 +33,9 @@ func (l *League) ParseBody(body io.Reader) error {
 	return nil
 }
 
-func (l *League) GetModelCollection() *mgo.Collection {
-	return l.Model.GetDb().C("league")
-}
-
-func (l *League) GetAll() ([]League, error) {
-	var L []League
-	err := l.Collection.Find(nil).All(&L)
-	return L, err
+func (l *League) GetAll() (L []League, err error) {
+	err = l.Collection.Find(nil).All(&L)
+	return
 }
 
 func (l *League) GetOneById(id string) (error) {

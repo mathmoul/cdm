@@ -11,10 +11,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func fasterErrors(err error) muxrouter.JSON {
-	return muxrouter.JSON{"errors": muxrouter.JSON{"global": err.Error()}}
-}
-
 /*
 Authenticate function
 */

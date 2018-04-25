@@ -1,40 +1,40 @@
 import api from "../api";
-import { USER_LOGGED_IN, USER_LOGGED_OUT } from "../types";
+import {USER_LOGGED_IN, USER_LOGGED_OUT} from "../types";
 import setAuthorizationToken from '../utils/setAuthorizationHeader'
 
 export const userLoggedIn = (user) => ({
-  type: USER_LOGGED_IN,
-  user
+    type: USER_LOGGED_IN,
+    user
 });
 
 export const userLoggedOut = () => ({
-  type: USER_LOGGED_OUT
+    type: USER_LOGGED_OUT
 });
 
 export const login = (credentials) => (dispatch) =>
-  api.user.login(credentials).then((user) => {
-    localStorage.cdmJWT = user.token;
-    setAuthorizationToken(user.token);
-    dispatch(userLoggedIn(user));
-  });
+    api.user.login(credentials).then((user) => {
+        localStorage.cdmJWT = user.token;
+        setAuthorizationToken(user.token);
+        dispatch(userLoggedIn(user));
+    });
 
 export const logout = () => (dispatch) => {
-  localStorage.removeItem("cdmJWT");
-  setAuthorizationToken();
-  dispatch(userLoggedOut());
+    localStorage.removeItem("cdmJWT");
+    setAuthorizationToken();
+    dispatch(userLoggedOut());
 };
 
 export const confirm = (token) => (dispatch) =>
-  api.user.confirm(token).then(user => {
-    localStorage.cdmJWT = user.token;
-    dispatch(userLoggedIn(user));
-  });
+    api.user.confirm(token).then(user => {
+        localStorage.cdmJWT = user.token;
+        dispatch(userLoggedIn(user));
+    });
 
-export const resetPasswordRequest = ({ email }) => () =>
-  api.user.resetPasswordRequest(email);
+export const resetPasswordRequest = ({email}) => () =>
+    api.user.resetPasswordRequest(email);
 
 export const validateToken = (token) => () =>
-  api.user.validateToken(token).then();
+    api.user.validateToken(token).then();
 
 export const resetPassword = (data) => () =>
-  api.user.resetPassword(data);
+    api.user.resetPassword(data);

@@ -5,7 +5,7 @@ import Validator from 'validator'
 import InlineError from '../messages/InlineError'
 import isEmpty from 'lodash/isEmpty'
 
-import { Button, Form, Message } from 'semantic-ui-react'
+import {Button, Form, Message} from 'semantic-ui-react'
 
 class LoginForm extends React.Component {
   state = {
@@ -56,12 +56,12 @@ class LoginForm extends React.Component {
     return (
       <Form onSubmit={this.onSubmit} loading={loading}>
         {
-          errors.global && <Message negative>
-            <Message.Header>
-              Something went wrong
-            </Message.Header>
-            <p>invalid credentials</p>
-          </Message>
+            errors.global && <Message negative>
+                <Message.Header>
+                    Something went wrong
+                </Message.Header>
+                <p>invalid credentials</p>
+            </Message>
         }
         <Form.Field error={!!errors.email}>
           <label htmlFor="email">Email</label>
